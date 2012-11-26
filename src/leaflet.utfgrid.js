@@ -12,6 +12,9 @@ L.UtfGrid = L.Class.extend({
 		resolution: 2,
 		preload: true,
 
+		clickCallback: null,
+		moveCallback: null,
+
 	},
 
 	initialize: function (url, options) {
@@ -19,15 +22,55 @@ L.UtfGrid = L.Class.extend({
 
 		this._url = url;
 
-		this._update
+		this._cache = {};
+
+		if (options.clickCallback) {
+			//TODO
+		}
 	},
 
 	onAdd: function (map) {
 		this._map = map;
 
+		this._update();
+
+		//TODO: on moveend update
+		var zoom = this._map.getZoom();
+
+		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
+			return;
+		}
+
+		map.on('click', function (e) {
+
+			var x = Math.floor(e.layerPoint.x / this.options.tileSize), //FIXME: This can be -1 sometimes
+			    y = Math.round(e.layerPoint.y / this.options.tileSize),
+			    gridX = Math.floor((e.layerPoint.x - (x * this.options.tileSize)) / this.options.resolution),
+			    gridY = Math.floor((e.layerPoint.y - (y * this.options.tileSize) + (this.options.tileSize / 2)) / this.options.resolution);
+
+			var data = this._cache[map.getZoom() + '.' + x + '.' + y];
+			if (!data) {
+				//console.log('not cached ' + map.getZoom() + '.' + x + '.' + y);
+				this.options.clickCallback({ latlng: e.latlng, data: null });
+				return;
+			}
+
+			var idx = this._utfDecode(data.grid[gridY][gridX]),
+			    key = data.keys[idx],
+			    result = data.data[key];
+
+			this.options.clickCallback({ latlng: e.latlng, data: result });
+		}, this);
+	},
+
+	//Load up all required json grid files
+	//TODO: Load from center etc
+	_update: function () {
+
+		//TODO: on moveend update
 		var bounds = this._map.getPixelBounds(),
-			zoom = this._map.getZoom(),
-			tileSize = this.options.tileSize;
+		    zoom = this._map.getZoom(),
+		    tileSize = this.options.tileSize;
 
 		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
 			return;
@@ -36,58 +79,42 @@ L.UtfGrid = L.Class.extend({
 		var nwTilePoint = new L.Point(
 				Math.floor(bounds.min.x / tileSize),
 				Math.floor(bounds.min.y / tileSize)),
-
 			seTilePoint = new L.Point(
 				Math.floor(bounds.max.x / tileSize),
-				Math.floor(bounds.max.y / tileSize)),
+				Math.floor(bounds.max.y / tileSize));
 
-			tileBounds = new L.Bounds(nwTilePoint, seTilePoint);
-
-		map.on('click', function (e) {
-			//	e.latlng, e.layerPoint, e.containerPoint
-
-			var x = Math.floor(e.layerPoint.x / this.options.tileSize), //FIXME: This can be -1 sometimes
-				y = Math.round(e.layerPoint.y / this.options.tileSize),
-				gridX = Math.floor((e.layerPoint.x - (x * this.options.tileSize)) / this.options.resolution),
-				gridY = Math.floor((e.layerPoint.y - (y * this.options.tileSize) + (this.options.tileSize / 2)) / this.options.resolution);
-			//console.log(tileBounds);
-			console.log(e.layerPoint);
-			console.log(x + ", " + y);
-			console.log("-> " + gridX + ", " + gridY);
-
-			var url = L.Util.template(this._url, L.extend({
-				//s: this._getSubdomain(tilePoint),
-				z: this._map.getZoom(),
-				x: x,
-				y: y
-			}, this.options));
-			console.log(url);
-
-			//FIXME: JQUERYING IN THE HJIZZLE
-			//FIXME: NEED JSONP SUPPORT TOO
-			$.ajax({
-				url: url,
-				context: this,
-				type: 'GET'
-			})
-			.done(function (data) {
-				var idx = this._utfDecode(data.grid[gridY][gridX]);
-				var key = data.keys[idx];
-				var result = data.data[key];
-
-				console.log(result);
-				//TODO: callback with the result
-				//debugger;
-			})
-			.fail(function(data) {
-				debugger;
-			});
-
-			//debugger;
-			//debugger;
-		}, this);
+		//Load all required ones
+		for (var x = nwTilePoint.x; x <= seTilePoint.x; x++) {
+			for (var y = nwTilePoint.y; y <= seTilePoint.y; y++) {
+				this._loadTile(zoom, x, y);
+			}
+		}
 	},
 
+	_loadTile: function(zoom, x, y) {
+		var url = L.Util.template(this._url, L.extend({
+			//s: this._getSubdomain(tilePoint),
+			z: zoom,
+			x: x,
+			y: y
+		}, this.options));
+
+		var key = zoom + '.' + x + '.' + y;
+
+		//FIXME: JQUERYING IN THE HJIZZLE
+		//FIXME: NEED JSONP SUPPORT TOO
+		$.ajax({
+			url: url,
+			context: this,
+			type: 'GET'
+		})
+		.done(function (data) {
+			this._cache[key] = data;
+		})
+		.fail(function () {
+			console.log("Failed to load " + url);
+		});
+	},
 	_utfDecode: function (c) {
 		c = c.charCodeAt(0);
 		if (c >= 93)

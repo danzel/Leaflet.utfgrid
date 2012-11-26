@@ -28,7 +28,12 @@
 			key: 'BC9A493B41014CAABB98F0471D759707'
 		});
 
-		var utfGrid = new L.UtfGrid('world_utfgrid/{z}/{x}/{y}.json', { resolution: 4 });
+		var utfGrid = new L.UtfGrid('world_utfgrid/{z}/{x}/{y}.json', {
+			resolution: 4,
+			clickCallback: function (e) {
+				console.log(e);
+			}
+		});
 		//var utfGrid = new L.UtfGrid('http://openlayers.org/dev/examples/utfgrid/world_utfgrid/{z}/{x}/{y}.json');
 
 		var map = L.map('map')
