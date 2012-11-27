@@ -67,12 +67,18 @@ L.UtfGrid = L.Class.extend({
 	},
 
 	_objectForEvent: function (e) {
-		var point = this._map.project(e.latlng);
+		var map = this._map,
+		    point = map.project(e.latlng),
+		    tileSize = this.options.tileSize,
+		    resolution = this.options.resolution,
+		    x = Math.floor(point.x / tileSize),
+		    y = Math.floor(point.y / tileSize),
+		    gridX = Math.floor((point.x - (x * tileSize)) / resolution),
+		    gridY = Math.floor((point.y - (y * tileSize)) / resolution),
+			max = map.options.crs.scale(map.getZoom()) / tileSize;
 
-		var x = Math.floor(point.x / this.options.tileSize),
-		    y = Math.floor(point.y / this.options.tileSize),
-		    gridX = Math.floor((point.x - (x * this.options.tileSize)) / this.options.resolution),
-		    gridY = Math.floor((point.y - (y * this.options.tileSize)) / this.options.resolution);
+		x = (x + max) % max;
+		y = (y + max) % max;
 
 		var data = this._cache[map.getZoom() + '_' + x + '_' + y];
 		if (!data) {
