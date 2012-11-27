@@ -27,7 +27,6 @@ L.UtfGrid = L.Class.extend({
 
 		this._update();
 
-		//TODO: on moveend update
 		var zoom = this._map.getZoom();
 
 		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
