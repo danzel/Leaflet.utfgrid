@@ -21,7 +21,7 @@ L.UtfGrid = L.Class.extend({
 	_mouseOn: null,
 
 	initialize: function (url, options) {
-		options = L.setOptions(this, options);
+		options = L.Util.setOptions(this, options);
 
 		this._url = url;
 
@@ -142,7 +142,7 @@ L.UtfGrid = L.Class.extend({
 		var key = zoom + '_' + x + '_' + y;
 		var functionName = 'lu_' + key;
 
-		var url = L.Util.template(this._url, L.extend({
+		var url = L.Util.template(this._url, L.Util.extend({
 			s: L.TileLayer.prototype._getSubdomain.call(this, { x: x, y: y }),
 			z: zoom,
 			x: x,
