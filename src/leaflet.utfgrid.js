@@ -1,7 +1,3 @@
-
-
-
-
 L.UtfGrid = L.Class.extend({
 	includes: L.Mixin.Events,
 	options: {
@@ -21,15 +17,10 @@ L.UtfGrid = L.Class.extend({
 	_mouseOn: null,
 
 	initialize: function (url, options) {
-		options = L.Util.setOptions(this, options);
+		L.Util.setOptions(this, options);
 
 		this._url = url;
-
 		this._cache = {};
-
-		if (options.clickCallback) {
-			//TODO
-		}
 	},
 
 	onAdd: function (map) {
@@ -48,6 +39,12 @@ L.UtfGrid = L.Class.extend({
 		map.on('mousemove', this._move, this);
 		map.on('moveend', this._update, this);
 		//TODO: Touch may need special support?
+	},
+
+	onRemove: function () {
+		map.off('click', this._click, this);
+		map.off('mousemove', this._move, this);
+		map.off('moveend', this._update, this);
 	},
 
 	_click: function (e) {
@@ -100,7 +97,6 @@ L.UtfGrid = L.Class.extend({
 	//TODO: Load from center etc
 	_update: function () {
 
-		//TODO: on moveend update
 		var bounds = this._map.getPixelBounds(),
 		    zoom = this._map.getZoom(),
 		    tileSize = this.options.tileSize;
@@ -155,7 +151,6 @@ L.UtfGrid = L.Class.extend({
 
 		var self = this;
 		window[functionName] = function (data) {
-			//console.log('loaded ' + key);
 			self._cache[key] = data;
 			delete window[functionName];
 			head.removeChild(script);
@@ -181,11 +176,7 @@ L.UtfGrid = L.Class.extend({
 			type: 'GET'
 		})
 		.done(function (data) {
-			//console.log("loaded " + url);
 			this._cache[key] = data;
-		})
-		.fail(function () {
-			//console.log("Failed to load " + url);
 		});
 	},
 
