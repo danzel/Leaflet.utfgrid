@@ -8,7 +8,6 @@ L.UtfGrid = L.Class.extend({
 		tileSize: 256,
 
 		resolution: 2,
-		preload: true,
 
 		useJsonP: true
 	},

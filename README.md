@@ -46,6 +46,17 @@ The callback object in all cases is:
 }
 ```
 
+We use JSONP by default and will add ```?callback=something``` to the end of the url when requesting json.
+To use an ajax query you will need to include jquery (TODO: Remove this reliance!) and set useJsonP:false in the L.UtfGrid options.
+Your grid json provider must return raw json to support this functionality.
+
+```javascript
+var utfGrid = new L.UtfGrid('http://myserver/amazingness/{z}/{x}/{y}.grid.json', {
+	resolution: 4,
+	useJsonP: false
+});
+```
+
 ## Other examples of UTFGrid
 
 Spec: https://github.com/mapbox/utfgrid-spec
