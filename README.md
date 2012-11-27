@@ -2,8 +2,8 @@ Leaflet.utfgrid
 ===============
 
 A UTFGrid interaction implementation for leaflet that is super small.
-See: https://github.com/mapbox/utfgrid-spec
 
+Example: http://danzel.github.com/Leaflet.utfgrid/example/map.html
 
 ## Using the plugin
 See the included example for the plugin in action.
@@ -48,10 +48,12 @@ The callback object in all cases is:
 
 ## Other examples of UTFGrid
 
+Spec: https://github.com/mapbox/utfgrid-spec
+
 OpenLayers:
-http://openlayers.org/dev/examples/utfgrid_twogrids.html
-https://github.com/perrygeo/openlayers/blob/utfgrid/lib/OpenLayers/Tile/UTFGrid.js
+*   http://openlayers.org/dev/examples/utfgrid_twogrids.html
+*   https://github.com/perrygeo/openlayers/blob/utfgrid/lib/OpenLayers/Tile/UTFGrid.js
 
 Wax:
-http://mapbox.com/wax/interaction-leaf-native.html (Doesn't work correctly)
-https://github.com/mapbox/wax
+*   http://mapbox.com/wax/interaction-leaf-native.html (Doesn't work correctly in webkit)
+*   https://github.com/mapbox/wax
