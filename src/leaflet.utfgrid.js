@@ -8,6 +8,7 @@ L.Util.ajax = function (url, cb){
     request.open("GET", url);
     request.onreadystatechange = function(){
         if (request.readyState === 4 && request.status === 200 ){
+        	var JSON = JSON || false;
         	if(JSON){
                 response = JSON.parse(request.responseText);
         	}else{
