@@ -14,21 +14,33 @@
 <body>
 
 	<div id="map" style="width: 512px; height: 256px; cursor: pointer"></div>
+	Use the layers dialog to turn interaction on and off.
 	<div id="click"></div>
 	<div id="hover"></div>
-
+	
 	<script type="text/javascript">
 
-		var cloudmade = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/997/256/{z}/{x}/{y}.png', {
-			maxZoom: 18,
-			attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
-			key: 'BC9A493B41014CAABB98F0471D759707'
-		});
+		function getCloudMadeUrl(styleId) {
+			return 'http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/' + styleId + '/256/{z}/{x}/{y}.png';
+		}
+
+		var cloudmadeAttribution = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+			cloudmade = new L.TileLayer(getCloudMadeUrl(997), {attribution: cloudmadeAttribution}),
+			cloudmade2 = new L.TileLayer(getCloudMadeUrl(998), {attribution: cloudmadeAttribution});
 
 		var utfGrid = new L.UtfGrid('http://a.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json', {
 			resolution: 4
 		});
-
+		
+		//Use a LayerGroup to group together a TileLayer and our UtfGrid layer
+		//This enables us to toggle them both together in the layers dialog
+		var interactiveLayerGroup = L.layerGroup([
+			cloudmade2,
+			utfGrid
+		]);
+		
+		
+		//Events
 		utfGrid.on('click', function (e) {
 			if (e.data) {
 				document.getElementById('click').innerHTML = 'click: ' + e.data.admin;
@@ -48,10 +60,17 @@
 			//console.log('mouseout: ' + e.data);
 		});
 
+
+		//Create our map with just the base TileLayer
 		var map = L.map('map')
 				.setView([0, 0], 1)
-				.addLayer(cloudmade)
-				.addLayer(utfGrid);
+				.addLayer(cloudmade);
+
+		//Set up a layers control with the base map and interf
+		var layersControl = L.control.layers({
+			'Base Map': cloudmade,
+			'Interfactive Map': interactiveLayerGroup
+		}).addTo(map);
 	</script>
 </body>
 </html>

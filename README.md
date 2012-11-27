@@ -57,6 +57,12 @@ var utfGrid = new L.UtfGrid('http://myserver/amazingness/{z}/{x}/{y}.grid.json',
 });
 ```
 
+### Turning interaction on and off
+
+You can add and remove the UtfGrid layer from your map as per normal, even within a layers control.
+
+Example: http://danzel.github.com/Leaflet.utfgrid/example/layers.html
+
 ## Other examples of UTFGrid
 
 Spec: https://github.com/mapbox/utfgrid-spec
