@@ -5,6 +5,8 @@
 L.UtfGrid = L.Class.extend({
 	includes: L.Mixin.Events,
 	options: {
+		subdomains: 'abc',
+
 		minZoom: 0,
 		maxZoom: 18,
 		tileSize: 256,
@@ -44,6 +46,7 @@ L.UtfGrid = L.Class.extend({
 
 		map.on('click', this._click, this);
 		map.on('mousemove', this._move, this);
+		map.on('moveend', this._update, this);
 		//TODO: Touch needs special support?
 	},
 
@@ -63,11 +66,14 @@ L.UtfGrid = L.Class.extend({
 		}
 	},
 
-	_objectForEvent: function(e) {
-		var x = Math.floor(e.layerPoint.x / this.options.tileSize), //FIXME: This can be -1 sometimes (or > than the size of the thing)
-		    y = Math.round(e.layerPoint.y / this.options.tileSize),
-		    gridX = Math.floor((e.layerPoint.x - (x * this.options.tileSize)) / this.options.resolution),
-		    gridY = Math.floor((e.layerPoint.y - (y * this.options.tileSize) + (this.options.tileSize / 2)) / this.options.resolution);
+	_objectForEvent: function (e) {
+		var point = this._map.project(e.latlng);
+		point.y -= 128; //i dunno
+
+		var x = Math.floor(point.x / this.options.tileSize), //FIXME: This can be -1 sometimes (or > than the size of the thing)
+		    y = Math.round(point.y / this.options.tileSize),
+		    gridX = Math.floor((point.x - (x * this.options.tileSize)) / this.options.resolution),
+		    gridY = Math.floor((point.y - (y * this.options.tileSize) + (this.options.tileSize / 2)) / this.options.resolution);
 
 		var data = this._cache[map.getZoom() + '_' + x + '_' + y];
 		if (!data) {
@@ -103,15 +109,24 @@ L.UtfGrid = L.Class.extend({
 				Math.floor(bounds.min.y / tileSize)),
 			seTilePoint = new L.Point(
 				Math.floor(bounds.max.x / tileSize),
-				Math.floor(bounds.max.y / tileSize));
+				Math.floor(bounds.max.y / tileSize)),
+				max = this._map.options.crs.scale(zoom) / tileSize;
 
 		//Load all required ones
-		for (var x = nwTilePoint.x; x < seTilePoint.x; x++) {
+		for (var x = nwTilePoint.x; x <= seTilePoint.x; x++) {
 			for (var y = nwTilePoint.y; y <= seTilePoint.y; y++) {
-				if (this.options.useJsonP) {
-					this._loadTileP(zoom, x, y);
-				} else {
-					this._loadTile(zoom, x, y);
+
+				var xw = (x + max) % max, yw = (y + max) % max;
+				var key = zoom + '_' + xw + '_' + yw;
+
+				if (!this._cache.hasOwnProperty(key)) {
+					this._cache[key] = null;
+
+					if (this.options.useJsonP) {
+						this._loadTileP(zoom, xw, yw);
+					} else {
+						this._loadTile(zoom, xw, yw);
+					}
 				}
 			}
 		}
@@ -123,7 +138,7 @@ L.UtfGrid = L.Class.extend({
 		var functionName = 'lu_' + key;
 
 		var url = L.Util.template(this._url, L.extend({
-			//s: this._getSubdomain(tilePoint),
+			s: L.TileLayer.prototype._getSubdomain.call(this, { x: x, y: y }),
 			z: zoom,
 			x: x,
 			y: y
