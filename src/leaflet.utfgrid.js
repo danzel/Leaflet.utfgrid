@@ -20,6 +20,15 @@ L.UtfGrid = L.Class.extend({
 
 		this._url = url;
 		this._cache = {};
+
+		//Find a unique id in window we can use for our callbacks
+		//Required for jsonP
+		var i = 0;
+		while (window['lu' + i]) {
+			i++;
+		}
+		this._windowKey = 'lu' + i;
+		window[this._windowKey] = {};
 	},
 
 	onAdd: function (map) {
@@ -36,7 +45,6 @@ L.UtfGrid = L.Class.extend({
 		map.on('click', this._click, this);
 		map.on('mousemove', this._move, this);
 		map.on('moveend', this._update, this);
-		//TODO: Touch may need special support?
 	},
 
 	onRemove: function () {
@@ -82,7 +90,7 @@ L.UtfGrid = L.Class.extend({
 			return { latlng: e.latlng, data: null };
 		}
 
-		var idx = this._utfDecode(data.grid[gridY][gridX]),
+		var idx = this._utfDecode(data.grid[gridY].charCodeAt(gridX)),
 		    key = data.keys[idx],
 		    result = data.data[key];
 
@@ -133,9 +141,11 @@ L.UtfGrid = L.Class.extend({
 	},
 
 	_loadTileP: function (zoom, x, y) {
-		var head = document.getElementsByTagName('head')[0];
-		var key = zoom + '_' + x + '_' + y;
-		var functionName = 'lu_' + key;
+		var head = document.getElementsByTagName('head')[0],
+		    key = zoom + '_' + x + '_' + y,
+		    functionName = 'lu_' + key,
+		    wk = this._windowKey,
+		    self = this;
 
 		var url = L.Util.template(this._url, L.Util.extend({
 			s: L.TileLayer.prototype._getSubdomain.call(this, { x: x, y: y }),
@@ -146,12 +156,11 @@ L.UtfGrid = L.Class.extend({
 
 		var script = document.createElement('script');
 		script.setAttribute("type", "text/javascript");
-		script.setAttribute("src", url + "?callback=" + functionName);
+		script.setAttribute("src", url + "?callback=" + wk + '.' + functionName);
 
-		var self = this;
-		window[functionName] = function (data) {
+		window[wk][functionName] = function (data) {
 			self._cache[key] = data;
-			delete window[functionName];
+			delete window[wk][functionName];
 			head.removeChild(script);
 		};
 
@@ -180,7 +189,6 @@ L.UtfGrid = L.Class.extend({
 	},
 
 	_utfDecode: function (c) {
-		c = c.charCodeAt(0);
 		if (c >= 93)
 			c--;
 		if (c >= 35)
