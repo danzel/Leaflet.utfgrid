@@ -15,6 +15,7 @@ L.UtfGrid = L.Class.extend({
 		clickCallback: null,
 		moveCallback: null,
 
+		useJsonP: true
 	},
 
 	initialize: function (url, options) {
@@ -47,10 +48,10 @@ L.UtfGrid = L.Class.extend({
 			    y = Math.round(e.layerPoint.y / this.options.tileSize),
 			    gridX = Math.floor((e.layerPoint.x - (x * this.options.tileSize)) / this.options.resolution),
 			    gridY = Math.floor((e.layerPoint.y - (y * this.options.tileSize) + (this.options.tileSize / 2)) / this.options.resolution);
-
-			var data = this._cache[map.getZoom() + '.' + x + '.' + y];
+			debugger;
+			var data = this._cache[map.getZoom() + '_' + x + '_' + y];
 			if (!data) {
-				//console.log('not cached ' + map.getZoom() + '.' + x + '.' + y);
+				//console.log('not cached ' + map.getZoom() + '_' + x + '_' + y);
 				this.options.clickCallback({ latlng: e.latlng, data: null });
 				return;
 			}
@@ -84,11 +85,42 @@ L.UtfGrid = L.Class.extend({
 				Math.floor(bounds.max.y / tileSize));
 
 		//Load all required ones
-		for (var x = nwTilePoint.x; x <= seTilePoint.x; x++) {
-			for (var y = nwTilePoint.y; y <= seTilePoint.y; y++) {
-				this._loadTile(zoom, x, y);
+		for (var x = nwTilePoint.x; x < seTilePoint.x; x++) {
+			for (var y = nwTilePoint.y; y < seTilePoint.y; y++) {
+				if (this.options.useJsonP) {
+					this._loadTileP(zoom, x, y);
+				} else {
+					this._loadTile(zoom, x, y);
+				}
 			}
 		}
+	},
+
+	_loadTileP: function (zoom, x, y) {
+		var head = document.getElementsByTagName('head')[0];
+		var key = zoom + '_' + x + '_' + y;
+		var functionName = 'lu_' + key;
+
+		var url = L.Util.template(this._url, L.extend({
+			//s: this._getSubdomain(tilePoint),
+			z: zoom,
+			x: x,
+			y: y
+		}, this.options));
+
+		var script = document.createElement('script');
+		script.setAttribute("type", "text/javascript");
+		script.setAttribute("src", url + "?callback=" + functionName);
+
+		var self = this;
+		window[functionName] = function(data) {
+			self._cache[key] = data;
+			delete window[functionName];
+			head.removeChild(script);
+		};
+
+		head.appendChild(script);
+		//TODO: Create script tag
 	},
 
 	_loadTile: function(zoom, x, y) {
@@ -99,7 +131,7 @@ L.UtfGrid = L.Class.extend({
 			y: y
 		}, this.options));
 
-		var key = zoom + '.' + x + '.' + y;
+		var key = zoom + '_' + x + '_' + y;
 
 		//FIXME: JQUERYING IN THE HJIZZLE
 		//FIXME: NEED JSONP SUPPORT TOO
@@ -109,6 +141,7 @@ L.UtfGrid = L.Class.extend({
 			type: 'GET'
 		})
 		.done(function (data) {
+			console.log("loaded " + url);
 			this._cache[key] = data;
 		})
 		.fail(function () {
