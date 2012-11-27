@@ -40,8 +40,8 @@ L.UtfGrid = L.Class.extend({
 	},
 
 	onRemove: function () {
-        var map = this._map;
-        map.off('click', this._click, this);
+		var map = this._map;
+		map.off('click', this._click, this);
 		map.off('mousemove', this._move, this);
 		map.off('moveend', this._update, this);
 	},
