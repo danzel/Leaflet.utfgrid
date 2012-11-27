@@ -12,11 +12,11 @@ L.UtfGrid = L.Class.extend({
 		resolution: 2,
 		preload: true,
 
-		clickCallback: null,
-		moveCallback: null,
-
 		useJsonP: true
 	},
+
+	//The thing the mouse is currently on
+	_mouseOn: null,
 
 	initialize: function (url, options) {
 		options = L.setOptions(this, options);
@@ -42,26 +42,47 @@ L.UtfGrid = L.Class.extend({
 			return;
 		}
 
-		map.on('click', function (e) {
+		map.on('click', this._click, this);
+		map.on('mousemove', this._move, this);
+		//TODO: Touch needs special support?
+	},
 
-			var x = Math.floor(e.layerPoint.x / this.options.tileSize), //FIXME: This can be -1 sometimes
-			    y = Math.round(e.layerPoint.y / this.options.tileSize),
-			    gridX = Math.floor((e.layerPoint.x - (x * this.options.tileSize)) / this.options.resolution),
-			    gridY = Math.floor((e.layerPoint.y - (y * this.options.tileSize) + (this.options.tileSize / 2)) / this.options.resolution);
-			debugger;
-			var data = this._cache[map.getZoom() + '_' + x + '_' + y];
-			if (!data) {
-				//console.log('not cached ' + map.getZoom() + '_' + x + '_' + y);
-				this.options.clickCallback({ latlng: e.latlng, data: null });
-				return;
+	_click: function (e) {
+		this.fire('click', this._objectForEvent(e));
+	},
+	_move: function (e) {
+		var on = this._objectForEvent(e);
+
+		if (on.data != this._mouseOn) {
+			if (this._mouseOn) {
+				this.fire('mouseout', { latlng: e.latlng, data: this._mouseOn });
 			}
+			this.fire('mouseover', on);
 
-			var idx = this._utfDecode(data.grid[gridY][gridX]),
-			    key = data.keys[idx],
-			    result = data.data[key];
+			this._mouseOn = on.data;
+		}
+	},
 
-			this.options.clickCallback({ latlng: e.latlng, data: result });
-		}, this);
+	_objectForEvent: function(e) {
+		var x = Math.floor(e.layerPoint.x / this.options.tileSize), //FIXME: This can be -1 sometimes (or > than the size of the thing)
+		    y = Math.round(e.layerPoint.y / this.options.tileSize),
+		    gridX = Math.floor((e.layerPoint.x - (x * this.options.tileSize)) / this.options.resolution),
+		    gridY = Math.floor((e.layerPoint.y - (y * this.options.tileSize) + (this.options.tileSize / 2)) / this.options.resolution);
+
+		var data = this._cache[map.getZoom() + '_' + x + '_' + y];
+		if (!data) {
+			console.log('not cached ' + map.getZoom() + '_' + x + '_' + y);
+			return { latlng: e.latlng, data: null };
+		}
+
+		var idx = this._utfDecode(data.grid[gridY][gridX]),
+		    key = data.keys[idx],
+		    result = data.data[key];
+
+		if (!data.data.hasOwnProperty(key))
+			result = null;
+
+		return { latlng: e.latlng, data: result};
 	},
 
 	//Load up all required json grid files
@@ -86,7 +107,7 @@ L.UtfGrid = L.Class.extend({
 
 		//Load all required ones
 		for (var x = nwTilePoint.x; x < seTilePoint.x; x++) {
-			for (var y = nwTilePoint.y; y < seTilePoint.y; y++) {
+			for (var y = nwTilePoint.y; y <= seTilePoint.y; y++) {
 				if (this.options.useJsonP) {
 					this._loadTileP(zoom, x, y);
 				} else {
@@ -113,7 +134,8 @@ L.UtfGrid = L.Class.extend({
 		script.setAttribute("src", url + "?callback=" + functionName);
 
 		var self = this;
-		window[functionName] = function(data) {
+		window[functionName] = function (data) {
+			console.log('loaded ' + key);
 			self._cache[key] = data;
 			delete window[functionName];
 			head.removeChild(script);
@@ -123,7 +145,7 @@ L.UtfGrid = L.Class.extend({
 		//TODO: Create script tag
 	},
 
-	_loadTile: function(zoom, x, y) {
+	_loadTile: function (zoom, x, y) {
 		var url = L.Util.template(this._url, L.extend({
 			//s: this._getSubdomain(tilePoint),
 			z: zoom,

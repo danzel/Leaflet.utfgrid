@@ -18,7 +18,7 @@
 <body>
 
 	<div id="map" style="width: 512px; height: 256px; cursor: pointer"></div>
-	<button id="populate">Populate with 10 markers</button>
+	<div id="label"></div>
 
 	<script type="text/javascript">
 
@@ -28,16 +28,27 @@
 			key: 'BC9A493B41014CAABB98F0471D759707'
 		});
 
-		
 		//var utfGrid = new L.UtfGrid('http://a.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json?callback=grid', {
 		var utfGrid = new L.UtfGrid('http://a.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json', {
 		//var utfGrid = new L.UtfGrid('world_utfgrid/{z}/{x}/{y}.json', {
 			//useJsonP: false,
-			resolution: 4,
-			clickCallback: function (e) {
-				console.log(e);
-			}
+			resolution: 4
 		});
+
+		utfGrid.on('click', function (e) {
+			if (e.data) {
+				document.getElementById('label').innerHTML = 'click: ' + e.data.admin;
+			} else {
+				document.getElementById('label').innerHTML = 'click: nothing';
+			}
+		}); 
+		utfGrid.on('mouseover', function (e) {
+			console.log('mouseover: ' + e.data);
+		});
+		utfGrid.on('mouseout', function (e) {
+			console.log('mouseout: ' + e.data);
+		});
+
 		//var utfGrid = new L.UtfGrid('http://openlayers.org/dev/examples/utfgrid/world_utfgrid/{z}/{x}/{y}.json');
 
 		var map = L.map('map')
