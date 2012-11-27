@@ -1,3 +1,14 @@
+L.Util.ajax = function (url, cb){
+    var response, request = new XMLHttpRequest();
+    request.open("GET",url);
+    request.onreadystatechange = function(){
+        if (request.readyState === 4 && request.status === 200 ){
+            response = JSON.parse(request.responseText);
+            cb(response);
+        }
+    };
+    request.send();    
+};
 L.UtfGrid = L.Class.extend({
 	includes: L.Mixin.Events,
 	options: {
@@ -166,15 +177,9 @@ L.UtfGrid = L.Class.extend({
 		}, this.options));
 
 		var key = zoom + '_' + x + '_' + y;
-
-		//TODO: This uses jquery, would be nice to not!
-		$.ajax({
-			url: url,
-			context: this,
-			type: 'GET'
-		})
-		.done(function (data) {
-			this._cache[key] = data;
+        var self = this; //is this neccesary?
+		L.Util.ajax(url, function (data) {
+            self._cache[key] = data;
 		});
 	},
 
