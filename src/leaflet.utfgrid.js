@@ -1,9 +1,18 @@
+//minified version of https://github.com/douglascrockford/JSON-js/blob/master/json_parse.js, we could also just use eval
+var json_parse=function(){var h,a,k={'"':'"',"\\":"\\","/":"/",b:"\b",f:"\f",n:"\n",r:"\r",t:"\t"},j,e=function(a){throw{name:"SyntaxError",message:a,at:h,text:j};},c=function(b){b&&b!==a&&e("Expected '"+b+"' instead of '"+a+"'");a=j.charAt(h);h+=1;return a},l=function(){var b;b="";"-"===a&&(b="-",c("-"));for(;"0"<=a&&"9">=a;)b+=a,c();if("."===a)for(b+=".";c()&&"0"<=a&&"9">=a;)b+=a;if("e"===a||"E"===a){b+=a;c();if("-"===a||"+"===a)b+=a,c();for(;"0"<=a&&"9">=a;)b+=a,c()}b=+b;if(isFinite(b))return b;
+e("Bad number")},m=function(){var b,g,f="",d;if('"'===a)for(;c();){if('"'===a)return c(),f;if("\\"===a)if(c(),"u"===a){for(g=d=0;4>g;g+=1){b=parseInt(c(),16);if(!isFinite(b))break;d=16*d+b}f+=String.fromCharCode(d)}else if("string"===typeof k[a])f+=k[a];else break;else f+=a}e("Bad string")},d=function(){for(;a&&" ">=a;)c()},n=function(){switch(a){case "t":return c("t"),c("r"),c("u"),c("e"),!0;case "f":return c("f"),c("a"),c("l"),c("s"),c("e"),!1;case "n":return c("n"),c("u"),c("l"),c("l"),null}e("Unexpected '"+
+a+"'")},i;i=function(){d();switch(a){case "{":var b;a:{var g={};if("{"===a){c("{");d();if("}"===a){c("}");b=g;break a}for(;a;){b=m();d();c(":");Object.hasOwnProperty.call(g,b)&&e('Duplicate key "'+b+'"');g[b]=i();d();if("}"===a){c("}");b=g;break a}c(",");d()}}e("Bad object");b=void 0}return b;case "[":a:{b=[];if("["===a){c("[");d();if("]"===a){c("]");break a}for(;a;){b.push(i());d();if("]"===a){c("]");break a}c(",");d()}}e("Bad array");b=void 0}return b;case '"':return m();case "-":return l();default:return"0"<=
+a&&"9">=a?l():n()}};return function(b,c){var f;j=b;h=0;a=" ";f=i();d();a&&e("Syntax error");return"function"===typeof c?function p(a,b){var d,f,e=a[b];if(e&&"object"===typeof e)for(d in e)Object.prototype.hasOwnProperty.call(e,d)&&(f=p(e,d),void 0!==f?e[d]=f:delete e[d]);return c.call(a,b,e)}({"":f},""):f}}();
 L.Util.ajax = function (url, cb){
     var response, request = new XMLHttpRequest();
     request.open("GET", url);
     request.onreadystatechange = function(){
         if (request.readyState === 4 && request.status === 200 ){
-            response = JSON.parse(request.responseText);
+        	if(JSON){
+                response = JSON.parse(request.responseText);
+        	}else{
+        		response = json_parse(request.responseText);
+        	}
             cb(response);
         }
     };
