@@ -68,12 +68,11 @@ L.UtfGrid = L.Class.extend({
 
 	_objectForEvent: function (e) {
 		var point = this._map.project(e.latlng);
-		point.y -= 128; //i dunno
 
-		var x = Math.floor(point.x / this.options.tileSize), //FIXME: This can be -1 sometimes (or > than the size of the thing)
-		    y = Math.round(point.y / this.options.tileSize),
+		var x = Math.floor(point.x / this.options.tileSize),
+		    y = Math.floor(point.y / this.options.tileSize),
 		    gridX = Math.floor((point.x - (x * this.options.tileSize)) / this.options.resolution),
-		    gridY = Math.floor((point.y - (y * this.options.tileSize) + (this.options.tileSize / 2)) / this.options.resolution);
+		    gridY = Math.floor((point.y - (y * this.options.tileSize)) / this.options.resolution);
 
 		var data = this._cache[map.getZoom() + '_' + x + '_' + y];
 		if (!data) {
