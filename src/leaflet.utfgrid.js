@@ -47,7 +47,7 @@ L.UtfGrid = L.Class.extend({
 		map.on('click', this._click, this);
 		map.on('mousemove', this._move, this);
 		map.on('moveend', this._update, this);
-		//TODO: Touch needs special support?
+		//TODO: Touch may need special support?
 	},
 
 	_click: function (e) {
@@ -82,7 +82,7 @@ L.UtfGrid = L.Class.extend({
 
 		var data = this._cache[map.getZoom() + '_' + x + '_' + y];
 		if (!data) {
-			console.log('not cached ' + map.getZoom() + '_' + x + '_' + y);
+			//console.log('not cached ' + map.getZoom() + '_' + x + '_' + y);
 			return { latlng: e.latlng, data: null };
 		}
 
@@ -155,19 +155,18 @@ L.UtfGrid = L.Class.extend({
 
 		var self = this;
 		window[functionName] = function (data) {
-			console.log('loaded ' + key);
+			//console.log('loaded ' + key);
 			self._cache[key] = data;
 			delete window[functionName];
 			head.removeChild(script);
 		};
 
 		head.appendChild(script);
-		//TODO: Create script tag
 	},
 
 	_loadTile: function (zoom, x, y) {
 		var url = L.Util.template(this._url, L.extend({
-			//s: this._getSubdomain(tilePoint),
+			s: L.TileLayer.prototype._getSubdomain.call(this, { x: x, y: y }),
 			z: zoom,
 			x: x,
 			y: y
@@ -175,21 +174,21 @@ L.UtfGrid = L.Class.extend({
 
 		var key = zoom + '_' + x + '_' + y;
 
-		//FIXME: JQUERYING IN THE HJIZZLE
-		//FIXME: NEED JSONP SUPPORT TOO
+		//TODO: This uses jquery, would be nice to not!
 		$.ajax({
 			url: url,
 			context: this,
 			type: 'GET'
 		})
 		.done(function (data) {
-			console.log("loaded " + url);
+			//console.log("loaded " + url);
 			this._cache[key] = data;
 		})
 		.fail(function () {
-			console.log("Failed to load " + url);
+			//console.log("Failed to load " + url);
 		});
 	},
+
 	_utfDecode: function (c) {
 		c = c.charCodeAt(0);
 		if (c >= 93)
