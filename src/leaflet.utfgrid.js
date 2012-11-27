@@ -1,6 +1,6 @@
 L.Util.ajax = function (url, cb){
     var response, request = new XMLHttpRequest();
-    request.open("GET",url);
+    request.open("GET", url);
     request.onreadystatechange = function(){
         if (request.readyState === 4 && request.status === 200 ){
             response = JSON.parse(request.responseText);
