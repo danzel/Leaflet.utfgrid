@@ -21,21 +21,18 @@ var utfGrid = new L.UtfGrid('http://{s}.tiles.mapbox.com/v3/mapbox.geography-cla
 Add event listeners to it
 ```javascript
 utfGrid.on('click', function (e) {
+	//click events are fired with e.data==null if an area with no hit is clicked
 	if (e.data) {
 		alert('click: ' + e.data.admin);
 	} else {
 		alert('click: nothing');
 	}
-}); 
+});
 utfGrid.on('mouseover', function (e) {
-	if (e.data) {
-		console.log('hover: ' + e.data.admin);
-	} else {
-		console.log('hover: nothing');
-	}
+	console.log('hover: ' + e.data.admin);
 });
 utfGrid.on('mouseout', function (e) {
-	console.log('mouseout: ' + e.data);
+	console.log('unhover: ' + e.data.admin);
 });
 ```
 

@@ -64,7 +64,9 @@ L.UtfGrid = L.Class.extend({
 			if (this._mouseOn) {
 				this.fire('mouseout', { latlng: e.latlng, data: this._mouseOn });
 			}
-			this.fire('mouseover', on);
+			if (on.data) {
+				this.fire('mouseover', on);
+			}
 
 			this._mouseOn = on.data;
 		}
