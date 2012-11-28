@@ -151,12 +151,13 @@ L.UtfGrid = L.Class.extend({
 			s: L.TileLayer.prototype._getSubdomain.call(this, { x: x, y: y }),
 			z: zoom,
 			x: x,
-			y: y
+			y: y,
+			cb: wk + '.' + functionName
 		}, this.options));
 
 		var script = document.createElement('script');
 		script.setAttribute("type", "text/javascript");
-		script.setAttribute("src", url + "?callback=" + wk + '.' + functionName);
+		script.setAttribute("src", url);
 
 		window[wk][functionName] = function (data) {
 			self._cache[key] = data;

@@ -12,10 +12,11 @@ See the included example for the plugin in action.
 
 Create a new L.UtfGrid, optionally specifying the resolution
 ```javascript
-var utfGrid = new L.UtfGrid('http://a.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json', {
+var utfGrid = new L.UtfGrid('http://{s}.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json?callback={cb}', {
 	resolution: 4
 });
 ```
+```?callback={cb}``` is required when using utfgrids in JSONP mode.
 
 Add event listeners to it
 ```javascript
@@ -46,7 +47,7 @@ The callback object in all cases is:
 }
 ```
 
-We use JSONP by default and will add ```?callback=something``` to the end of the url when requesting json.
+We use JSONP by default which requires the query string part of the url to contain ```callback={cb}```.
 To use an ajax query instead you need to include jquery (TODO: Remove this reliance!) and set useJsonP:false in the L.UtfGrid options.
 Your grid json provider must return raw json to support this functionality.
 
