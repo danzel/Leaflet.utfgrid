@@ -207,7 +207,7 @@ L.UtfGrid = L.Class.extend({
 	},
 
 	_loadTile: function (zoom, x, y) {
-		var url = L.Util.template(this._url, L.extend({
+		var url = L.Util.template(this._url, L.Util.extend({
 			s: L.TileLayer.prototype._getSubdomain.call(this, { x: x, y: y }),
 			z: zoom,
 			x: x,
