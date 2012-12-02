@@ -2,7 +2,8 @@ L.Util.ajax = function (url, cb) {
 	// the following is from JavaScript: The Definitive Guide
 	// and https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest/Using_XMLHttpRequest_in_IE6
 	if (window.XMLHttpRequest === undefined) {
-		window.XMLHttpRequest = function() {
+		window.XMLHttpRequest = function () {
+			/*global ActiveXObject:true */
 			try {
 				return new ActiveXObject("Microsoft.XMLHTTP");
 			}
@@ -13,12 +14,13 @@ L.Util.ajax = function (url, cb) {
 	}
 	var response, request = new XMLHttpRequest();
 	request.open("GET", url);
-	request.onreadystatechange = function() {
+	request.onreadystatechange = function () {
+		/*jshint evil: true */
 		if (request.readyState === 4 && request.status === 200) {
-			if(window.JSON) {
+			if (window.JSON) {
 				response = JSON.parse(request.responseText);
 			} else {
-				response = eval("("+ request.responseText + ")");
+				response = eval("(" + request.responseText + ")");
 			}
 			cb(response);
 		}
@@ -92,7 +94,7 @@ L.UtfGrid = L.Class.extend({
 	_move: function (e) {
 		var on = this._objectForEvent(e);
 
-		if (on.data != this._mouseOn) {
+		if (on.data !== this._mouseOn) {
 			if (this._mouseOn) {
 				this.fire('mouseout', { latlng: e.latlng, data: this._mouseOn });
 			}
@@ -128,8 +130,9 @@ L.UtfGrid = L.Class.extend({
 		    key = data.keys[idx],
 		    result = data.data[key];
 
-		if (!data.data.hasOwnProperty(key))
+		if (!data.data.hasOwnProperty(key)) {
 			result = null;
+		}
 
 		return { latlng: e.latlng, data: result};
 	},
@@ -218,10 +221,12 @@ L.UtfGrid = L.Class.extend({
 	},
 
 	_utfDecode: function (c) {
-		if (c >= 93)
+		if (c >= 93) {
 			c--;
-		if (c >= 35)
+		}
+		if (c >= 35) {
 			c--;
+		}
 		return c - 32;
 	}
 });
