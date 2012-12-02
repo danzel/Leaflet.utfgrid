@@ -1,17 +1,13 @@
 L.Util.ajax = function (url, cb) {
 	// the following is from JavaScript: The Definitive Guide
+	// and https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest/Using_XMLHttpRequest_in_IE6
 	if (window.XMLHttpRequest === undefined) {
 		window.XMLHttpRequest = function() {
 			try {
-				return new ActiveXObject("Microsoft.XMLHTTP.6.0");
+				return new ActiveXObject("Microsoft.XMLHTTP");
 			}
-			catch  (e1) {
-				try {
-					return new ActiveXObject("Microsoft.XMLHTTP.3.0");
-				}
-				catch (e2) {
-					throw new Error("XMLHttpRequest is not supported");
-				}
+			catch  (e) {
+				throw new Error("XMLHttpRequest is not supported");
 			}
 		};
 	}
