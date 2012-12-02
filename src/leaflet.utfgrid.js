@@ -215,9 +215,9 @@ L.UtfGrid = L.Class.extend({
 		}, this.options));
 
 		var key = zoom + '_' + x + '_' + y;
-        var self = this; //is this neccesary?
+		var self = this;
 		L.Util.ajax(url, function (data) {
-            self._cache[key] = data;
+			self._cache[key] = data;
 		});
 	},
 
