@@ -60,6 +60,11 @@ L.UtfGrid = L.Class.extend({
 		}
 		this._windowKey = 'lu' + i;
 		window[this._windowKey] = {};
+
+		var subdomains = this.options.subdomains;
+		if (typeof this.options.subdomains === 'string') {
+			this.options.subdomains = subdomains.split('');
+		}
 	},
 
 	onAdd: function (map) {
