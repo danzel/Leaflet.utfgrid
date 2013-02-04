@@ -103,6 +103,8 @@ L.UtfGrid = L.Class.extend({
 			}
 
 			this._mouseOn = on.data;
+		} else if (on.data) {
+			this.fire('mousemove', on);
 		}
 	},
 
