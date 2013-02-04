@@ -31,6 +31,9 @@ utfGrid.on('click', function (e) {
 utfGrid.on('mouseover', function (e) {
 	console.log('hover: ' + e.data.admin);
 });
+utfGrid.on('mousemove', function (e) {
+	console.log('move: ' + e.data.admin);
+});
 utfGrid.on('mouseout', function (e) {
 	console.log('unhover: ' + e.data.admin);
 });
