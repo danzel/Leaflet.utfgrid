@@ -124,7 +124,6 @@ L.UtfGrid = L.Class.extend({
 
 		var data = this._cache[map.getZoom() + '_' + x + '_' + y];
 		if (!data) {
-			//console.log('not cached ' + map.getZoom() + '_' + x + '_' + y);
 			return { latlng: e.latlng, data: null };
 		}
 
