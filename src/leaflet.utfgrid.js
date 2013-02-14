@@ -110,13 +110,13 @@ L.UtfGrid = L.Class.extend({
 
 	_objectForEvent: function (e) {
 		var map = this._map,
-		    point = map.project(e.latlng),
-		    tileSize = this.options.tileSize,
-		    resolution = this.options.resolution,
-		    x = Math.floor(point.x / tileSize),
-		    y = Math.floor(point.y / tileSize),
-		    gridX = Math.floor((point.x - (x * tileSize)) / resolution),
-		    gridY = Math.floor((point.y - (y * tileSize)) / resolution),
+			point = map.project(e.latlng),
+			tileSize = this.options.tileSize,
+			resolution = this.options.resolution,
+			x = Math.floor(point.x / tileSize),
+			y = Math.floor(point.y / tileSize),
+			gridX = Math.floor((point.x - (x * tileSize)) / resolution),
+			gridY = Math.floor((point.y - (y * tileSize)) / resolution),
 			max = map.options.crs.scale(map.getZoom()) / tileSize;
 
 		x = (x + max) % max;
@@ -129,8 +129,8 @@ L.UtfGrid = L.Class.extend({
 		}
 
 		var idx = this._utfDecode(data.grid[gridY].charCodeAt(gridX)),
-		    key = data.keys[idx],
-		    result = data.data[key];
+			key = data.keys[idx],
+			result = data.data[key];
 
 		if (!data.data.hasOwnProperty(key)) {
 			result = null;
@@ -144,8 +144,8 @@ L.UtfGrid = L.Class.extend({
 	_update: function () {
 
 		var bounds = this._map.getPixelBounds(),
-		    zoom = this._map.getZoom(),
-		    tileSize = this.options.tileSize;
+			zoom = this._map.getZoom(),
+			tileSize = this.options.tileSize;
 
 		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
 			return;
@@ -181,10 +181,10 @@ L.UtfGrid = L.Class.extend({
 
 	_loadTileP: function (zoom, x, y) {
 		var head = document.getElementsByTagName('head')[0],
-		    key = zoom + '_' + x + '_' + y,
-		    functionName = 'lu_' + key,
-		    wk = this._windowKey,
-		    self = this;
+			key = zoom + '_' + x + '_' + y,
+			functionName = 'lu_' + key,
+			wk = this._windowKey,
+			self = this;
 
 		var url = L.Util.template(this._url, L.Util.extend({
 			s: L.TileLayer.prototype._getSubdomain.call(this, { x: x, y: y }),
