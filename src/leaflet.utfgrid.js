@@ -36,7 +36,7 @@ L.UtfGrid = L.Class.extend({
 		maxZoom: 18,
 		tileSize: 256,
 
-		resolution: 2,
+		resolution: 4,
 
 		useJsonP: true
 	},
