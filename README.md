@@ -1,11 +1,12 @@
 Leaflet.utfgrid
 ===============
 
-A UTFGrid interaction implementation for leaflet that is super small.
+A UTFGrid interaction implementation for Leaflet that is super small.
 
 Example: http://danzel.github.com/Leaflet.utfgrid/example/map.html
 
 ## Using the plugin
+
 See the included example for the plugin in action.
 
 ### Usage

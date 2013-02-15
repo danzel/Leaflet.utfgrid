@@ -27,9 +27,7 @@
 			key: 'BC9A493B41014CAABB98F0471D759707'
 		});
 
-		var utfGrid = new L.UtfGrid('http://{s}.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json?callback={cb}', {
-			resolution: 4
-		});
+		var utfGrid = new L.UtfGrid('http://{s}.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json?callback={cb}');
 
 		utfGrid.on('click', function (e) {
 			if (e.data) {
