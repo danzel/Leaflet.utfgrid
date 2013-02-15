@@ -11,10 +11,10 @@ See the included example for the plugin in action.
 
 ### Usage
 
-Create a new L.UtfGrid, optionally specifying the resolution
+Create a new L.UtfGrid, optionally specifying the resolution (The default is 4)
 ```javascript
 var utfGrid = new L.UtfGrid('http://{s}.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json?callback={cb}', {
-	resolution: 4
+	resolution: 2
 });
 ```
 ```?callback={cb}``` is required when using utfgrids in JSONP mode.
@@ -54,7 +54,6 @@ Your grid json provider must return raw json to support this functionality.
 
 ```javascript
 var utfGrid = new L.UtfGrid('http://myserver/amazingness/{z}/{x}/{y}.grid.json', {
-	resolution: 4,
 	useJsonP: false
 });
 ```
