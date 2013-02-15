@@ -28,9 +28,7 @@
 			cloudmade = new L.TileLayer(getCloudMadeUrl(997), {attribution: cloudmadeAttribution}),
 			cloudmade2 = new L.TileLayer(getCloudMadeUrl(998), {attribution: cloudmadeAttribution});
 
-		var utfGrid = new L.UtfGrid('http://{s}.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json?callback={cb}', {
-			resolution: 4
-		});
+		var utfGrid = new L.UtfGrid('http://{s}.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json?callback={cb}');
 		
 		//Use a LayerGroup to group together a TileLayer and our UtfGrid layer
 		//This enables us to toggle them both together in the layers dialog
