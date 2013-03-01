@@ -67,6 +67,7 @@ L.UtfGrid = L.Class.extend({
 
 	onAdd: function (map) {
 		this._map = map;
+		this._container = this._map._container;
 
 		this._update();
 
@@ -97,9 +98,11 @@ L.UtfGrid = L.Class.extend({
 		if (on.data !== this._mouseOn) {
 			if (this._mouseOn) {
 				this.fire('mouseout', { latlng: e.latlng, data: this._mouseOn });
+				this._container.style.cursor = '';
 			}
 			if (on.data) {
 				this.fire('mouseover', on);
+				this._container.style.cursor = 'pointer';
 			}
 
 			this._mouseOn = on.data;
