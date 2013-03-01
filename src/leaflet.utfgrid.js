@@ -231,3 +231,7 @@ L.UtfGrid = L.Class.extend({
 		return c - 32;
 	}
 });
+
+L.utfGrid = function(url, options) {
+	return new L.UtfGrid(url, options);
+};
