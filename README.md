@@ -49,7 +49,7 @@ The callback object in all cases is:
 ```
 
 We use JSONP by default which requires the query string part of the url to contain ```callback={cb}```.
-To use an ajax query instead you need to include jquery (TODO: Remove this reliance!) and set useJsonP:false in the L.UtfGrid options.
+To use an ajax query instead you need to set useJsonP:false in the L.UtfGrid options.
 Your grid json provider must return raw json to support this functionality.
 
 ```javascript
@@ -57,6 +57,10 @@ var utfGrid = new L.UtfGrid('http://myserver/amazingness/{z}/{x}/{y}.grid.json',
 	useJsonP: false
 });
 ```
+
+### Other options
+
+pointerCursor: changes the mouse cursor to a pointer when hovering over an interactive part of the grid. (Default: true)
 
 ### Turning interaction on and off
 
