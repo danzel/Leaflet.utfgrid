@@ -43,9 +43,10 @@ L.UtfGrid = L.Class.extend({
 		maxZoom: 18,
 		tileSize: 256,
 
-		resolution: 2,
+		resolution: 4,
 
-		useJsonP: true
+		useJsonP: true,
+		pointerCursor: true
 	},
 
 	//The thing the mouse is currently on
@@ -74,6 +75,7 @@ L.UtfGrid = L.Class.extend({
 
 	onAdd: function (map) {
 		this._map = map;
+		this._container = this._map._container;
 
 		this._update();
 
@@ -104,12 +106,20 @@ L.UtfGrid = L.Class.extend({
 		if (on.data !== this._mouseOn) {
 			if (this._mouseOn) {
 				this.fire('mouseout', { latlng: e.latlng, data: this._mouseOn });
+				if (this.options.pointerCursor) {
+					this._container.style.cursor = '';
+				}
 			}
 			if (on.data) {
 				this.fire('mouseover', on);
+				if (this.options.pointerCursor) {
+					this._container.style.cursor = 'pointer';
+				}
 			}
 
 			this._mouseOn = on.data;
+		} else if (on.data) {
+			this.fire('mousemove', on);
 		}
 	},
 
@@ -129,7 +139,6 @@ L.UtfGrid = L.Class.extend({
 
 		var data = this._cache[map.getZoom() + '_' + x + '_' + y];
 		if (!data) {
-			//console.log('not cached ' + map.getZoom() + '_' + x + '_' + y);
 			return { latlng: e.latlng, data: null };
 		}
 
@@ -237,6 +246,7 @@ L.UtfGrid = L.Class.extend({
 		return c - 32;
 	}
 });
+
 
 
 
