@@ -88,6 +88,7 @@ L.UtfGrid = L.Class.extend({
 		map.off('click', this._click, this);
 		map.off('mousemove', this._move, this);
 		map.off('moveend', this._update, this);
+		this._map._container.style.cursor = '';
 	},
 
 	_click: function (e) {
