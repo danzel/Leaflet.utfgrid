@@ -95,6 +95,9 @@ L.UtfGrid = L.Class.extend({
 		map.off('click', this._click, this);
 		map.off('mousemove', this._move, this);
 		map.off('moveend', this._update, this);
+		if (this.options.pointerCursor) {
+			this._container.style.cursor = '';
+		}
 	},
 
 	_click: function (e) {
@@ -246,6 +249,10 @@ L.UtfGrid = L.Class.extend({
 		return c - 32;
 	}
 });
+
+L.utfGrid = function (url, options) {
+	return new L.UtfGrid(url, options);
+};
 
 
 
