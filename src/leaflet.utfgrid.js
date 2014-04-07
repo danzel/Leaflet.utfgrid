@@ -27,8 +27,7 @@ L.Util.ajax = function (url, cb) {
 	};
 	request.send();
 };
-L.UtfGrid = L.Class.extend({
-	includes: L.Mixin.Events,
+L.UtfGrid = L.Layer.extend({
 	options: {
 		subdomains: 'abc',
 
