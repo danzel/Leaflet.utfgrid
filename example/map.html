@@ -3,12 +3,11 @@
 <head>
 	<title>Leaflet debug page</title>
 
-	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.css" />
-	<!--[if lte IE 8]><link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.ie.css" /><![endif]-->
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<script src="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.js"></script>
 	<script src="../src/leaflet.utfgrid.js"></script>
 </head>
 <body>
@@ -19,10 +18,9 @@
 
 	<script type="text/javascript">
 
-		var cloudmade = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/997/256/{z}/{x}/{y}.png', {
+		var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 			maxZoom: 18,
-			attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
-			key: 'BC9A493B41014CAABB98F0471D759707'
+			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 		});
 
 		var utfGrid = new L.UtfGrid('http://{s}.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json?callback={cb}');
@@ -48,7 +46,7 @@
 
 		var map = L.map('map')
 				.setView([0, 0], 1)
-				.addLayer(cloudmade)
+				.addLayer(tiles)
 				.addLayer(utfGrid);
 	</script>
 </body>
