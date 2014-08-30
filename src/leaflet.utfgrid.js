@@ -93,6 +93,12 @@ L.UtfGrid = L.Class.extend({
 		}
 	},
 
+    redraw: function () {
+        // Clear cache to force all tiles to reload
+        this._cache = {};
+        this._update();
+    },
+
 	_click: function (e) {
 		this.fire('click', this._objectForEvent(e));
 	},
