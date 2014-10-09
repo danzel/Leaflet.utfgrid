@@ -28,7 +28,7 @@ L.Util.ajax = function (url, cb) {
 	request.send();
 	return request;
 };
-L.UtfGrid = L.Class.extend({
+L.UtfGrid = L.TileLayer.extend({
 	includes: L.Mixin.Events,
 	options: {
 		subdomains: 'abc',
@@ -77,7 +77,7 @@ L.UtfGrid = L.Class.extend({
 
 	onAdd: function (map) {
 		this._map = map;
-		this._container = this._map._container;
+		this._initContainer();
 
 		this._update();
 
