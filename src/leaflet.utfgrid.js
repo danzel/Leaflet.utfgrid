@@ -121,7 +121,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		var on = this._objectForEvent(e);
 
 		if (on.data !== this._mouseOn) {
-			if (this._mouseOn) {
+			if (this._mouseOn && on.data == null) {
 				this.fire('mouseout', { latlng: e.latlng, data: this._mouseOn });
 				if (this.options.pointerCursor) {
 					this._container.style.cursor = '';
