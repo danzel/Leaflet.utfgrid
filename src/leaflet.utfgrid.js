@@ -102,6 +102,16 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		}
 	},
 
+	setUrl: function (url, noRedraw) {
+		this._url = url;
+		
+		if (!noRedraw) {
+			this.redraw();
+		}
+		
+		return this;
+	},
+
 	redraw: function () {
 		// Clear cache to force all tiles to reload
 		this._request_queue = [];
