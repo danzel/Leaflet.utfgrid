@@ -49,13 +49,13 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 	//The thing the mouse is currently on
 	_mouseOn: null,
 
-	// The requests
-	_requests: {},
-	_request_queue: [],
-	_requests_in_process: [],
-
 	initialize: function (url, options) {
 		L.Util.setOptions(this, options);
+
+		// The requests
+		this._requests = {};
+		this._request_queue = [];
+		this._requests_in_process = [];
 
 		this._url = url;
 		this._cache = {};
@@ -165,19 +165,17 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		y = (y + max) % max;
 
 		var data = this._cache[map.getZoom() + '_' + x + '_' + y];
-		if (!data || !data.grid) {
-			return { latlng: e.latlng, data: null };
+		var result = null;
+		if (data && data.grid) {
+			var idx = this._utfDecode(data.grid[gridY].charCodeAt(gridX)),
+				key = data.keys[idx];
+
+			if (data.data.hasOwnProperty(key)) {
+				result = data.data[key];
+			}
 		}
 
-		var idx = this._utfDecode(data.grid[gridY].charCodeAt(gridX)),
-		    key = data.keys[idx],
-		    result = data.data[key];
-
-		if (!data.data.hasOwnProperty(key)) {
-			result = null;
-		}
-
-		return { latlng: e.latlng, data: result};
+		return L.extend({ latlng: e.latlng, data: result }, e);
 	},
 
 	//Load up all required json grid files
