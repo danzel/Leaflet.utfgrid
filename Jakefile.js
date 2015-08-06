@@ -1,9 +1,13 @@
 var build = require('./build/build.js'),
     lint = require('./build/hint.js');
 
-var COPYRIGHT = '/*\n Copyright (c) 2012, Smartrak, David Leaver\n' +
-                ' Leaflet.utfgrid is an open-source JavaScript library that provides utfgrid interaction on leaflet powered maps.\n' + 
-                ' https://github.com/danzel/Leaflet.utfgrid\n*/\n';
+var COPYRIGHT = '/*!\n' +
+                ' * Copyright (c) 2012, Smartrak, David Leaver\n' +
+                ' * Leaflet.utfgrid is an open-source JavaScript library that provides utfgrid interaction on leaflet powered maps.\n' + 
+                ' * https://github.com/danzel/Leaflet.utfgrid\n' +
+                ' *\n' +
+                ' * @license MIT\n' +
+                ' */\n';
 
 desc('Check Leaflet.utfgrid source for errors with JSHint');
 task('lint', function () {
