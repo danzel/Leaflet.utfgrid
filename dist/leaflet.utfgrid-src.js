@@ -1,8 +1,10 @@
-/*
- Copyright (c) 2012, Smartrak, David Leaver
- Leaflet.utfgrid is an open-source JavaScript library that provides utfgrid interaction on leaflet powered maps.
- https://github.com/danzel/Leaflet.utfgrid
-*/
+/*!
+ * Copyright (c) 2012, Smartrak, David Leaver
+ * Leaflet.utfgrid is an open-source JavaScript library that provides utfgrid interaction on leaflet powered maps.
+ * https://github.com/danzel/Leaflet.utfgrid
+ *
+ * @license MIT
+ */
 (function (window, undefined) {
 
 L.Util.ajax = function (url, cb) {
@@ -56,13 +58,13 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 	//The thing the mouse is currently on
 	_mouseOn: null,
 
-	// The requests
-	_requests: {},
-	_request_queue: [],
-	_requests_in_process: [],
-
 	initialize: function (url, options) {
 		L.Util.setOptions(this, options);
+
+		// The requests
+		this._requests = {};
+		this._request_queue = [];
+		this._requests_in_process = [];
 
 		this._url = url;
 		this._cache = {};
