@@ -312,6 +312,10 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		}
 		// Recurse
 		this._process_queued_requests();
+		// Fire 'load' event if all tiles have been loaded
+		if (this._requests_in_process.length === 0) {
+			this.fire('load');
+		}
 	},
 
 	_abort_request: function(key){
