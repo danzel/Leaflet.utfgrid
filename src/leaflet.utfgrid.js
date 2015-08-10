@@ -252,10 +252,10 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 			self._finish_request(key);
 		};
 
-		this._queue_request(key, function() {
+		this._queue_request(key, function () {
 			head.appendChild(script);
 			return {
-				abort: function() {
+				abort: function () {
 					head.removeChild(script);
 				}
 			};
@@ -272,7 +272,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 
 		var key = zoom + '_' + x + '_' + y;
 		var self = this;
-		this._queue_request(key, function() {
+		this._queue_request(key, function () {
 			return L.Util.ajax(url, function (data) {
 				self._cache[key] = data;
 				self._finish_request(key);
@@ -280,7 +280,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		});
 	},
 
-	_queue_request: function(key, callback) {
+	_queue_request: function (key, callback) {
 		this._requests[key] = {
 			callback: callback,
 			timeout: null,
@@ -290,7 +290,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		this._process_queued_requests();
 	},
 
-	_finish_request: function(key) {
+	_finish_request: function (key) {
 		// Remove from requests in process
 		var pos = this._requests_in_process.indexOf(key);
 		if (pos >= 0) {
@@ -316,7 +316,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		}
 	},
 
-	_abort_request: function(key) {
+	_abort_request: function (key) {
 		// Abort the request if possible
 		if (this._requests[key] && this._requests[key].handler) {
 			if (typeof this._requests[key].handler.abort === 'function') {
@@ -331,16 +331,16 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		this._finish_request(key);
 	},
 
-	_process_queued_requests: function() {
+	_process_queued_requests: function () {
 		while (this._request_queue.length > 0 && (this.options.maxRequests === 0 ||
 		       this._requests_in_process.length < this.options.maxRequests)) {
 			this._process_request(this._request_queue.pop());
 		}
 	},
 
-	_process_request: function(key) {
+	_process_request: function (key) {
 		var self = this;
-		this._requests[key].timeout = window.setTimeout(function() {
+		this._requests[key].timeout = window.setTimeout(function () {
 			self._abort_request(key);
 		}, this.options.requestTimeout);
 		this._requests_in_process.push(key);
