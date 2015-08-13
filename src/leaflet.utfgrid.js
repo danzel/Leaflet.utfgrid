@@ -83,13 +83,13 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 
 		var zoom = this._map.getZoom();
 
-		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
-			return;
-		}
-
 		map.on('click', this._click, this);
 		map.on('mousemove', this._move, this);
 		map.on('moveend', this._update, this);
+
+		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
+			return;
+		}
 	},
 
 	onRemove: function () {
