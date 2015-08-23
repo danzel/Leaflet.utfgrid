@@ -55,7 +55,7 @@ exports.combineFiles = function (files) {
 	for (var i = 0, len = files.length; i < len; i++) {
 		content += fs.readFileSync(files[i], 'utf8') + '\n\n';
 	}
-	return content + '\n\n}(this));';
+	return content + '\n\n}(window));';
 };
 
 exports.save = function (savePath, compressed) {
