@@ -378,4 +378,4 @@ L.utfGrid = function (url, options) {
 
 
 
-}(this));
+}(window));
