@@ -281,7 +281,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 
 	_ajaxRequestFactory: function (key, url) {
 		var successCallback = this._successCallbackFactory(key);
-		var errorCallback = this._errorCallbackFactory(url);
+		var errorCallback = this._errorCallbackFactory(url, key);
 		return function () {
 			var request = L.Util.ajax(url, successCallback, errorCallback);
 			request.timeout = this.options.requestTimeout;
@@ -296,8 +296,9 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		}.bind(this);
 	},
 
-	_errorCallbackFactory: function (tileurl) {
+	_errorCallbackFactory: function (tileurl, key) {
 		return function (statuscode) {
+			this._finish_request(key);
 			this.fire('tileerror', {
 				url: tileurl,
 				code: statuscode
