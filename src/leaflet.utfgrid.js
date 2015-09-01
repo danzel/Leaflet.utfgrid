@@ -1,4 +1,5 @@
-L.Util.ajax = function (url, success, error) {
+L.Util.ajax = function (url, timeout, success, error) {
+
 	if (window.XMLHttpRequest === undefined) {
 		error(new Error("XMLHttpRequest is not supported"));
 	}
@@ -25,6 +26,7 @@ L.Util.ajax = function (url, success, error) {
 		}
 	};
 	request.ontimeout = function () { error('timeout'); };
+	request.timeout = timeout;
 	request.send();
 	return request;
 };
@@ -278,8 +280,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		var successCallback = this._successCallbackFactory(key);
 		var errorCallback = this._errorCallbackFactory(url, key);
 		return function () {
-			var request = L.Util.ajax(url, successCallback, errorCallback);
-			request.timeout = this.options.requestTimeout;
+			var request = L.Util.ajax(url, this.options.requestTimeout, successCallback, errorCallback);
 			return request;
 		}.bind(this);
 	},
