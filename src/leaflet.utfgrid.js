@@ -1,30 +1,26 @@
 L.Util.ajax = function (url, timeout, success, error) {
-	// the following is from JavaScript: The Definitive Guide
-	// and https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest/Using_XMLHttpRequest_in_IE6
+
 	if (window.XMLHttpRequest === undefined) {
-		window.XMLHttpRequest = function () {
-			/*global ActiveXObject:true */
-			try {
-				return new ActiveXObject("Microsoft.XMLHTTP");
-			}
-			catch  (e) {
-				throw new Error("XMLHttpRequest is not supported");
-			}
-		};
+		error(new Error("XMLHttpRequest is not supported"));
 	}
 	var response, request = new XMLHttpRequest();
 	request.open("GET", url);
 	request.onreadystatechange = function () {
-		/*jshint evil: true */
 		if (request.readyState === 4) {
 			if (request.status === 200) {
 				if (window.JSON) {
-					response = JSON.parse(request.responseText);
+					try {
+						response = JSON.parse(request.responseText);
+						success(response);
+					} catch(e) {
+						error(e);
+					}
 				} else {
-					response = eval("(" + request.responseText + ")");
+					error(new Error('json not supported'));
 				}
-				success(response);
-			} else if (request.status !== 0 && error !== undefined) {
+			} else if (!request.status) {
+				error('Attempted cross origin request without CORS enabled');
+			} else {
 				error(request.status);
 			}
 		}

@@ -33,7 +33,7 @@ exports.getFiles = function (compsBase32) {
 	var files = [];
 
 	for (var src in memo) {
-		files.push('src/' + src);
+		files.push('./src/' + src);
 	}
 
 	return files;
@@ -41,13 +41,10 @@ exports.getFiles = function (compsBase32) {
 
 exports.uglify = function (code) {
 	var pro = uglifyjs.uglify;
-
-	var ast = uglifyjs.parser.parse(code);
-	ast = pro.ast_mangle(ast, {mangle: true});
-	ast = pro.ast_squeeze(ast);
-	ast = pro.ast_squeeze_more(ast);
-
-	return pro.gen_code(ast) + ';';
+	return uglifyjs.minify(code, {
+		fromString: true,
+		mangle: true
+	}).code + ';'
 };
 
 exports.combineFiles = function (files) {
