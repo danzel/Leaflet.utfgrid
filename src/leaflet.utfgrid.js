@@ -84,6 +84,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		this._update();
 
 		var zoom = this._map.getZoom();
+		map.on('zoomend', this._zoomend, this);
 
 		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
 			return;
@@ -96,6 +97,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 
 	onRemove: function () {
 		var map = this._map;
+		map.off('zoomend', this._zoomend, this);
 		map.off('click', this._click, this);
 		map.off('mousemove', this._move, this);
 		map.off('moveend', this._update, this);
@@ -224,6 +226,18 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		for (var req_key in this._requests) {
 			if (visible_tiles.indexOf(req_key) < 0) {
 				this._abort_request(req_key);
+			}
+		}
+	},
+
+	_zoomend: function () {
+		var curZoom = this._map.getZoom();
+		for (var key in this._cache) {
+			if (this._cache.hasOwnProperty(key)) {
+				var zoom = parseInt(key.split('_')[0]);
+				if (zoom !== curZoom) {
+					delete this._cache[key];
+				}
 			}
 		}
 	},
