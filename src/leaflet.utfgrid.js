@@ -250,7 +250,9 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		window[wk][functionName] = function (data) {
 			self._cache[key] = data;
 			delete window[wk][functionName];
-			head.removeChild(script);
+			if (script.parentElement==head) {
+				head.removeChild(script);
+			}
 			self._finish_request(key);
 		};
 
