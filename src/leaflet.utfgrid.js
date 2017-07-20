@@ -1,37 +1,40 @@
-L.Util.ajax = function (url, timeout, success, error) {
-
+L.ajax = function (url, success, error) {
+	// the following is from JavaScript: The Definitive Guide
+	// and https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest/Using_XMLHttpRequest_in_IE6
 	if (window.XMLHttpRequest === undefined) {
-		error(new Error("XMLHttpRequest is not supported"));
+		window.XMLHttpRequest = function () {
+			/*global ActiveXObject:true */
+			try {
+				return new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			catch  (e) {
+				throw new Error("XMLHttpRequest is not supported");
+			}
+		};
 	}
 	var response, request = new XMLHttpRequest();
 	request.open("GET", url);
 	request.onreadystatechange = function () {
+		/*jshint evil: true */
 		if (request.readyState === 4) {
 			if (request.status === 200) {
 				if (window.JSON) {
-					try {
-						response = JSON.parse(request.responseText);
-						success(response);
-					} catch(e) {
-						error(e);
-					}
+					response = JSON.parse(request.responseText);
 				} else {
-					error(new Error('json not supported'));
+					response = eval("(" + request.responseText + ")");
 				}
-			} else if (!request.status) {
-				error('Attempted cross origin request without CORS enabled');
-			} else {
+				success(response);
+			} else if (request.status !== 0 && error !== undefined) {
 				error(request.status);
 			}
 		}
 	};
 	request.ontimeout = function () { error('timeout'); };
-	request.timeout = timeout;
 	request.send();
 	return request;
 };
 L.UtfGrid = (L.Layer || L.Class).extend({
-	includes: L.Mixin.Events,
+	includes: L.Evented,
 	options: {
 		subdomains: 'abc',
 
@@ -83,7 +86,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 
 		this._update();
 
-		var zoom = this._map.getZoom();
+		var zoom = Math.round(this._map.getZoom());
 
 		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
 			return;
@@ -185,7 +188,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 	_update: function () {
 
 		var bounds = this._map.getPixelBounds(),
-		    zoom = this._map.getZoom(),
+		    zoom = Math.round(this._map.getZoom()),
 		    tileSize = this.options.tileSize;
 
 		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
@@ -250,7 +253,9 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		window[wk][functionName] = function (data) {
 			self._cache[key] = data;
 			delete window[wk][functionName];
-			head.removeChild(script);
+			if (script.parentElement===head) {
+				head.removeChild(script);
+			}
 			self._finish_request(key);
 		};
 
@@ -278,9 +283,10 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 
 	_ajaxRequestFactory: function (key, url) {
 		var successCallback = this._successCallbackFactory(key);
-		var errorCallback = this._errorCallbackFactory(url, key);
+		var errorCallback = this._errorCallbackFactory(url);
 		return function () {
-			var request = L.Util.ajax(url, this.options.requestTimeout, successCallback, errorCallback);
+			var request = L.ajax(url, successCallback, errorCallback);
+			request.timeout = this.options.requestTimeout;
 			return request;
 		}.bind(this);
 	},
@@ -292,9 +298,8 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		}.bind(this);
 	},
 
-	_errorCallbackFactory: function (tileurl, key) {
+	_errorCallbackFactory: function (tileurl) {
 		return function (statuscode) {
-			this._finish_request(key);
 			this.fire('tileerror', {
 				url: tileurl,
 				code: statuscode

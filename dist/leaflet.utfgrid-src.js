@@ -7,7 +7,7 @@
  */
 (function (window, undefined) {
 
-L.Util.ajax = function (url, success, error) {
+L.ajax = function (url, success, error) {
 	// the following is from JavaScript: The Definitive Guide
 	// and https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest/Using_XMLHttpRequest_in_IE6
 	if (window.XMLHttpRequest === undefined) {
@@ -43,7 +43,7 @@ L.Util.ajax = function (url, success, error) {
 	return request;
 };
 L.UtfGrid = (L.Layer || L.Class).extend({
-	includes: L.Mixin.Events,
+	includes: L.Evented,
 	options: {
 		subdomains: 'abc',
 
@@ -262,7 +262,9 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		window[wk][functionName] = function (data) {
 			self._cache[key] = data;
 			delete window[wk][functionName];
-			head.removeChild(script);
+			if (script.parentElement===head) {
+				head.removeChild(script);
+			}
 			self._finish_request(key);
 		};
 
@@ -292,7 +294,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 		var successCallback = this._successCallbackFactory(key);
 		var errorCallback = this._errorCallbackFactory(url);
 		return function () {
-			var request = L.Util.ajax(url, successCallback, errorCallback);
+			var request = L.ajax(url, successCallback, errorCallback);
 			request.timeout = this.options.requestTimeout;
 			return request;
 		}.bind(this);
@@ -408,6 +410,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 L.utfGrid = function (url, options) {
 	return new L.UtfGrid(url, options);
 };
+
 
 
 
